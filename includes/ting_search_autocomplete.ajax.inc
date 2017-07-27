@@ -17,49 +17,17 @@
 function ting_search_autocomplete_callback($query = '', $reset = FALSE) {
   $query = check_plain(strtolower($query));
   file_put_contents("/var/www/drupalvm/drupal/debug/suggest8.txt", print_r($query, TRUE), FILE_APPEND);
-//  $settings = variable_get('ting_search_autocomplete_settings', array());
-//
-//  $minimum_string = (!empty($settings['minimumString'])) ? $settings['minimumString'] : 3;
-//  if (drupal_strlen($query) < $minimum_string) {
-//    drupal_json_output(array());
-//    drupal_exit();
-//  }
-//
-//  if (empty($settings['index'])) {
-//    watchdog('ting_search_autocomplete', 'Autocomplete index not defined ', array(), $severity = WATCHDOG_WARNING);
-//    drupal_json_output(array());
-//    drupal_exit();
-//  }
-//
-//  // Try to use cache for the search string.
-//  $cid = md5($query);
-//  if (!$reset && $cache = cache_get($cid, 'cache_ting_search_autocomplete')) {
-//    $matches = $cache->data;
-//  }
-//  else {
-//    // Suggestion service does not implement SOAP with a JSON response
-//    $matches = ting_search_autocomplete_get_suggestions($query);
-//
-//    // Store the matches in cache for faster lookup next time.
-//    cache_set($cid, $matches, 'cache_ting_search_autocomplete', CACHE_TEMPORARY);
-//  }
+
   $results = array();
-  $suggestions = variable_get('ting_inspiration_list_suggest_data');
+  $suggestions = variable_get('ting_search_autocomplete_suggest_data_suggest_data');
   if(array_key_exists($query, $suggestions )) {
     $results = $suggestions[$query];
   }
   $matches = array();
-  $i = 0;
+
   foreach ($results as $match) {
-//    $key = str_replace(' ', '', $match);
-//    $key1 = str_replace('ø', 'oe', $key);
-//    $key2 = str_replace('æ', 'ae', $key1);
-//    $key3 = str_replace('å', 'aa', $key2);
-//    file_put_contents("/var/www/drupalvm/drupal/debug/suggest12.txt", print_r($key3, TRUE), FILE_APPEND);
     $key = utf8_encode ($match);
     $matches[truncate_utf8(strip_tags($key), 256, TRUE, FALSE, 1)] = utf8_encode ($match);
-    //$matches['index' . $i] = utf8_encode ($match);
-    $i++;
   }
   file_put_contents("/var/www/drupalvm/drupal/debug/suggest9.txt", print_r($results, TRUE), FILE_APPEND);
   file_put_contents("/var/www/drupalvm/drupal/debug/suggest10.txt", print_r($matches, TRUE), FILE_APPEND);

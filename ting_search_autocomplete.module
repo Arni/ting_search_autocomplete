@@ -29,6 +29,12 @@ function ting_search_autocomplete_menu() {
     'file' => 'includes/ting_search_autocomplete.admin.inc',
   );
 
+   $items['ting/autocomplete/suggestion'] = array(
+    'title' => 'Parse suggestion data',
+    'description' => t('Get data from well'),
+    'page callback' => 'ting_search_autocomplete_suggestion_data',
+    'access arguments' => array('administer ting settings'),
+  );
   return $items;
 }
 
@@ -83,4 +89,72 @@ function ting_search_autocomplete_settings() {
   $settings = array_merge($base_settings, $defaults);
   
   return $settings;
+}
+
+function ting_search_autocomplete_suggestion_data() {
+  print ("Parsing 2");
+
+  $csv = array_map('str_getcsv', file('/var/www/drupalvm/drupal/debug/parsedata2.txt'));
+  $suggest_data = array();
+  foreach ($csv as $line) {
+    if ((strpos($line[1], '"') == false) && (strpos($line[1], '=') == false)) {
+      $suggest_data[] = array(
+          'term' => strtolower($line[1]),
+          'hits' => $line[3]
+      );
+    }
+  }
+  file_put_contents("/var/www/drupalvm/drupal/debug/suggest3.txt", print_r($suggest_data, TRUE), FILE_APPEND);
+  file_put_contents("/var/www/drupalvm/drupal/debug/suggest2.txt", print_r($csv, TRUE), FILE_APPEND);
+  $suggest = ting_search_autocomplete_suggest_get_keys($suggest_data);
+
+  $suggest_result = array(); 
+  foreach ($suggest as $key => $char) {
+    uasort($char, 'ting_search_autocomplete_sort_suggest_count');
+    $top_results = array_slice($char, 0, 10);
+    $terms = array();
+    foreach ($top_results as $top_result) {
+      $terms[] = $top_result['term'];
+    }
+    $suggest_result[$key] = $terms;
+    file_put_contents("/var/www/drupalvm/drupal/debug/suggest7.txt", print_r($top_results, TRUE), FILE_APPEND);
+  }
+  file_put_contents("/var/www/drupalvm/drupal/debug/suggest6.txt", print_r($suggest_result, TRUE), FILE_APPEND);
+  variable_set('ting_search_autocomplete_suggest_data', $suggest_result);
+
+}
+
+function ting_search_autocomplete_suggest_get_keys($suggest_data) {
+  $suggest = array();
+  foreach ($suggest_data as $search_term) {
+    $char = substr($search_term['term'], 0, 1);
+    if (!array_key_exists($char, $suggest)) {
+      $suggest[$char] = array();
+    }
+    $suggest[$char][] = $search_term;
+    $char = substr($search_term['term'], 0, 2);
+    if (!array_key_exists($char, $suggest)) {
+      $suggest[$char] = array();
+    }
+    $suggest[$char][] = $search_term;
+    $char = substr($search_term['term'], 0, 3);
+    if (!array_key_exists($char, $suggest)) {
+      $suggest[$char] = array();
+    }
+    $suggest[$char][] = $search_term;
+  }
+  return $suggest;
+}
+
+function ting_search_autocomplete_sort_suggest_count($a, $b) {
+  if (!isset($a['hits'] )) {
+    return 1;
+  }
+  if (!isset($b['hits'] )) {
+    return -1;
+  }
+  if ($a['hits']  == $b['hits'] ) {
+    return 0;
+  }
+  return ($a['hits']  < $b['hits'] ) ? 1 : -1;
 }
