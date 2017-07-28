@@ -19,7 +19,7 @@ function ting_search_autocomplete_callback($query = '', $reset = FALSE) {
   file_put_contents("/var/www/drupalvm/drupal/debug/suggest8.txt", print_r($query, TRUE), FILE_APPEND);
 
   $results = array();
-  $suggestions = variable_get('ting_search_autocomplete_suggest_data_suggest_data');
+  $suggestions = variable_get('ting_search_autocomplete_suggest_data');
   if(array_key_exists($query, $suggestions )) {
     $results = $suggestions[$query];
   }

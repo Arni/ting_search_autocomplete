@@ -29,7 +29,7 @@ function ting_search_autocomplete_menu() {
     'file' => 'includes/ting_search_autocomplete.admin.inc',
   );
 
-   $items['ting/autocomplete/suggestion'] = array(
+   $items['ting/parsesuggestion'] = array(
     'title' => 'Parse suggestion data',
     'description' => t('Get data from well'),
     'page callback' => 'ting_search_autocomplete_suggestion_data',
