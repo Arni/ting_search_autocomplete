@@ -91,10 +91,10 @@ function ting_search_autocomplete_settings() {
   return $settings;
 }
 
-function ting_search_autocomplete_suggestion_data() {
-  print ("Parsing 2");
+function ting_search_autocomplete_suggestion_data($file) {
+  //print ("Parsing 2");
 
-  $csv = array_map('str_getcsv', file('/var/www/drupalvm/drupal/debug/parsedata2.txt'));
+  $csv = array_map('str_getcsv', file($file));
   $suggest_data = array();
   foreach ($csv as $line) {
     if ((strpos($line[1], '"') == false) && (strpos($line[1], '=') == false)) {
