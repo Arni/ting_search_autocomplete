@@ -92,8 +92,6 @@ function ting_search_autocomplete_settings() {
 }
 
 function ting_search_autocomplete_suggestion_data($file) {
-  //print ("Parsing 2");
-
   $csv = array_map('str_getcsv', file($file));
   $suggest_data = array();
   foreach ($csv as $line) {
@@ -104,8 +102,6 @@ function ting_search_autocomplete_suggestion_data($file) {
       );
     }
   }
-  file_put_contents("/var/www/drupalvm/drupal/debug/suggest3.txt", print_r($suggest_data, TRUE), FILE_APPEND);
-  file_put_contents("/var/www/drupalvm/drupal/debug/suggest2.txt", print_r($csv, TRUE), FILE_APPEND);
   $suggest = ting_search_autocomplete_suggest_get_keys($suggest_data);
 
   $suggest_result = array(); 
@@ -117,11 +113,8 @@ function ting_search_autocomplete_suggestion_data($file) {
       $terms[] = $top_result['term'];
     }
     $suggest_result[$key] = $terms;
-    file_put_contents("/var/www/drupalvm/drupal/debug/suggest7.txt", print_r($top_results, TRUE), FILE_APPEND);
   }
-  file_put_contents("/var/www/drupalvm/drupal/debug/suggest6.txt", print_r($suggest_result, TRUE), FILE_APPEND);
   variable_set('ting_search_autocomplete_suggest_data', $suggest_result);
-
 }
 
 function ting_search_autocomplete_suggest_get_keys($suggest_data) {

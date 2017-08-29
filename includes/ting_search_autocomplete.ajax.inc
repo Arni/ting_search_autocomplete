@@ -23,7 +23,6 @@ function ting_search_autocomplete_callback($query = '', $reset = FALSE) {
     $query = substr($query, 0, 3);
     $long_query = true;
   }
-  //file_put_contents("/var/www/drupalvm/drupal/debug/suggest8.txt", print_r($query, TRUE), FILE_APPEND);
 
   $results = array();
   $suggestions = variable_get('ting_search_autocomplete_suggest_data');
@@ -34,22 +33,15 @@ function ting_search_autocomplete_callback($query = '', $reset = FALSE) {
 
   foreach ($results as $match) {
     if ($long_query) {
-      file_put_contents("/var/www/drupalvm/drupal/debug/suggest14.txt", print_r($query . ' ' . $orig_query . ' ' .  $match , TRUE), FILE_APPEND);
       if (!(substr($match, 0, strlen($orig_query)) === $orig_query)) { //If the query doesn't match skip this suggestion.
-        //file_put_contents("/var/www/drupalvm/drupal/debug/suggest14.txt", print_r(' --  ramt --  ' , TRUE), FILE_APPEND);
         continue;
       }
     }
     $key = utf8_encode ($match);
     $matches[truncate_utf8(strip_tags($key), 256, TRUE, FALSE, 1)] = utf8_encode ($match);
   }
-  //file_put_contents("/var/www/drupalvm/drupal/debug/suggest9.txt", print_r($results, TRUE), FILE_APPEND);
-  //file_put_contents("/var/www/drupalvm/drupal/debug/suggest10.txt", print_r($matches, TRUE), FILE_APPEND);
-  $test = array('red' => 'red','green' => 'green' );
-  //$matches = array_splice($matches, 0, 1);
+
   drupal_json_output($matches);
-  $data = drupal_json_encode($matches);
-  //file_put_contents("/var/www/drupalvm/drupal/debug/suggest11.txt", print_r($data, TRUE), FILE_APPEND);
   drupal_exit();
 }
 
